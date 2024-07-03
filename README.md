@@ -63,7 +63,7 @@ xmuda
 
 * Generate the data infos by running the following command: 
 ```python 
-python -m pcdet.datasets.xmu.xmu_dataset create_xmu_infos tools/cfgs/dataset_configs/xmuda_dataset.yaml
+ python -m pcdet.datasets.xmu.xmu_dataset --func create_xmu_infos  --cfg_file tools/cfgs/dataset_configs/xmu/xmuda_dataset.yaml
 ```
 
 ## Model Zoo 
