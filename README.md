@@ -124,7 +124,7 @@ bash scripts/dist_test.sh 8 --cfg_file cfgs/xmu_ouster_models/centerpoint.yaml -
 
 
 ## Todo List
-
+- [ ] Data of Radar.
 - [ ] Code of Radar and Camera.
 - [ ] Code of DIG.
 - [ ] Code of BEVFUSION.
