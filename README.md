@@ -65,7 +65,10 @@ xmuda
 ```python 
  python -m pcdet.datasets.xmu.xmu_dataset --func create_xmu_infos  --cfg_file tools/cfgs/dataset_configs/xmu/xmuda_dataset.yaml
 ```
-
+* Generate gt_sampling_database by running the following command: 
+```
+python -m pcdet.datasets.xmu.xmu_dataset --func create_groundtruth_database  --cfg_file tools/cfgs/dataset_configs/xmu/xmu_dataset.yaml
+```
 ## Model Zoo 
 ### 3D Object Detection Baselines
 Selected supported methods are shown in the below table. The results are the 3D detection performance on the val set of CMD dataset.

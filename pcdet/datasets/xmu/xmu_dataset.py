@@ -167,7 +167,7 @@ class XMechanismUnmanned(DatasetTemplate):
         return boxes_7DoF, boxes_9DoF, classes, track_ids, confidences, occulusions, acts, points_num
 
 
-    def get_lidar(self, idx, sensor, num_features=4):
+    def get_lidar(self, idx, sensor, num_features=5):
         seq = idx['seq']
         frame = idx['frame']
         if not sensor:
@@ -180,7 +180,7 @@ class XMechanismUnmanned(DatasetTemplate):
         lidar_file = os.path.join(self.root_path, 'seq'+seq, sensor, lidar_file_list[int(frame)])
         assert Path(lidar_file).exists(), "lidar file %s not exists."%lidar_file
         lidar=np.load(lidar_file)
-        assert num_features==4, 'only support xyzi currently'
+       
         mask=crop_sector(lidar[:, :3], radius_range=[0, 150], angle_range=[-np.pi/3, np.pi/3])
         return lidar[mask]
 
@@ -487,8 +487,6 @@ class XMechanismUnmanned(DatasetTemplate):
         print(used_classes)
         import torch
         assert split in ['train', 'val', 'test']
-        # sensors = ['robosense', 'ouster', 'hesai', 'gpal']
-        # sensors = ['gpal']
        
         with open(info_path, 'rb') as f:
             infos = pickle.load(f)
@@ -505,7 +503,7 @@ class XMechanismUnmanned(DatasetTemplate):
             print('%s gt_database sample: %d/%d' % (sensor, i+1, len(infos)))
             info = infos[i]
             idx = info['idx']
-            points = self.get_lidar(idx=idx, sensor=sensor, num_features=4)
+            points = self.get_lidar(idx=idx, sensor=sensor)
             annos = info['annos']
             gt_boxes_7DoF= annos['boxes_7DoF']
             gt_names = annos['name']
@@ -551,12 +549,11 @@ class XMechanismUnmanned(DatasetTemplate):
                 f.write(line)
    
 # block for creating dataset infos
-def create_xmu_infos(dataset_cfg, class_names, data_path, save_path, workers=4):
+def create_xmu_infos(dataset_cfg, class_names, data_path,sensors, save_path, workers=4):
     dataset = XMechanismUnmanned(
         dataset_cfg=dataset_cfg, class_names=class_names, root_path=data_path,
         training =True, logger=common_utils.create_logger()
     ) 
-    sensors=['robosense', 'ouster', 'hesai']
     for sensor in sensors:
         train_split, val_split, test_split = 'train', 'val', 'test'
 
@@ -587,7 +584,7 @@ def create_xmu_infos(dataset_cfg, class_names, data_path, save_path, workers=4):
         print ('xmu %s samples are saved to %s'%(test_split, test_filename))
         print ('Start creating xmu groundtruth database for %s split'%train_split)
     dataset.set_split(train_split)
-    dataset.create_groundtruth_database(train_filename, used_classes=class_names, split=train_split)
+    #dataset.create_groundtruth_database(train_filename, used_classes=class_names, split=train_split)
     print ('Info generation done for XMechanismUnmanned dataset!')
 
 
@@ -606,11 +603,11 @@ if __name__ == "__main__":
         dataset_cfg = EasyDict(yaml.safe_load(open(args.cfg_file)))
         assert dataset_cfg.SENSOR == 'NotSelected', 'all the sensor should be generate'
         ROOT_DIR = (Path(__file__).resolve().parent / '../../../').resolve()
-        sensors = ['robosense', 'ouster', 'hesai', 'gpal']
+        sensors = ['robosense', 'ouster', 'hesai']
         create_xmu_infos(
             dataset_cfg=dataset_cfg,
             class_names=['Car', 'Truck', 'Pedestrian', 'Cyclist'],
-            # sensors=sensors,
+            sensors=sensors,
             data_path=ROOT_DIR / 'data' / 'xmu',
             save_path=ROOT_DIR / 'data' / 'xmu', 
         )
@@ -633,7 +630,7 @@ if __name__ == "__main__":
         dataset.set_split(train_split)
         for sensor in sensors:
             train_filename = os.path.join(Path(str(save_path[0])), 'xmu_infos_%s_%s.pkl'%(train_split,sensor))
-            dataset.create_groundtruth_database(train_filename, used_classes=class_names, split=train_split)
+            dataset.create_groundtruth_database(train_filename, used_classes=class_names, split=train_split,sensor=sensor)
     else:
         raise NotImplementedError
 
