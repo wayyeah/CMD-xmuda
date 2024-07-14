@@ -69,6 +69,8 @@ xmuda
 ```
 python -m pcdet.datasets.xmu.xmu_dataset --func create_groundtruth_database  --cfg_file tools/cfgs/dataset_configs/xmu/xmu_dataset.yaml
 ```
+
+# Due to our updated data annotation, the AP is different from what is presented in the paper
 ## Model Zoo 
 ### 3D Object Detection Baselines
 Selected supported methods are shown in the below table. The results are the 3D detection performance on the val set of CMD dataset.
